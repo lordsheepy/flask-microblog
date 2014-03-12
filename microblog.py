@@ -4,11 +4,17 @@ from config import configs
 import os
 from datetime import datetime
 from collections import deque
+from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
 
 app = Flask(__name__)
 mode = os.getenv('FLASK_MODE') or 'default'
 app.config.from_object(configs[mode])
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 
 class Post(db.Model):
@@ -42,3 +48,6 @@ def read_posts():
 
 def read_post(num):
     return Post.query.get(num)
+
+if __name__ == '__main__':
+    manager.run()
