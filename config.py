@@ -8,7 +8,7 @@ class Config(object):
 
 class ConfigTesting(object):
 
-    SQLALCHEMY_DATABASE_URI = 'postgresql://bloguser:bloguser@localhost/test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres@localhost/test'
     TESTING = True
 
 configs = {
