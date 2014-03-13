@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 from config import configs
 import os
@@ -28,7 +28,7 @@ class Post(db.Model):
 
     def __init__(self, title, text):
         self.title = title
-        self.test = text
+        self.text = text
         self.time = datetime.utcnow()
 
     def __repr__(self):
@@ -71,11 +71,38 @@ def list_view():
     return page
 
 
-@app.route('/post/<int:id>')
-def post_view(id):
-    post = read_post(id)
+@app.route('/post/<int:post_id>')
+def post_view(post_id):
+    post = read_post(post_id)
     page = render_template('list.html', posts=post)
     return page
+
+
+@app.route('/add', methods=['GET', 'POST'])
+def get_add_view():
+    if request.method == 'POST':
+        form = request.form
+        text, title = form['text'], form['title']
+        write_post(title, text)
+    else:
+        return render_template('make_post.html')
+
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
+
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = "Don't look at me, I am a secret pass!"
+    return session['_csrf_token']
+
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 
 if __name__ == '__main__':

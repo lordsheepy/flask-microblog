@@ -3,6 +3,7 @@
 {% for item in posts %}
 <div>
 <h1>{{ item.title }}</h1>
+<p>{{ item.author.name }}</p>
 <p>{{ item.text }}</p>
 <p>{{ item.time }}</p>
 </div>

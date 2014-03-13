@@ -1,6 +1,6 @@
 import unittest
 import os
-os.environ['FLASK_MODE'] = 'testing'
+os.environ['FLASK_MODE'] = os.getenv('FLASK_MODE') or 'testing'
 import microblog
 import config
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -54,6 +54,11 @@ class ReadPostsAndReadPostTests(unittest.TestCase):
 
     def test_read_posts(self):
         self.assertEqual(len(microblog.read_posts()), 3)
+
+class TestListView(unittest.TestCase):
+
+    def setUp(self):
+
 
 if __name__ == '__main__':
     unittest.main()
